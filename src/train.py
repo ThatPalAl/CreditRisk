@@ -11,7 +11,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader, Subset
 
-from model import MlpCredit, LinearCredit
+from .model import MlpCredit, LinearCredit
 
 ''' CONFIG '''
 DATA_PATH     = "data/german_credit_data/credit_data_validated.csv"

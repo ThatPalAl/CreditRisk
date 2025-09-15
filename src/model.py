@@ -1,5 +1,6 @@
 import torch.nn as nn
 
+
 class LinearCredit(nn.Module):
     def __init__(self, d_in):
         super().__init__()
@@ -7,7 +8,6 @@ class LinearCredit(nn.Module):
 
     def forward(self, x):
         return self.lin(x)
-
 
 class MlpCredit(nn.Module):
     def __init__(self, d_in, hidden=64, p=0.1):

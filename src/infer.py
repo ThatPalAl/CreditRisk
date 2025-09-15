@@ -5,7 +5,7 @@ import pandas as pd
 import json
 from pathlib import Path
 
-from model import LinearCredit, MlpCredit
+from .model import LinearCredit, MlpCredit
 
 ARTIFACTS = Path("artifacts")
 
