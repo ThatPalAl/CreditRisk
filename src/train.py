@@ -11,6 +11,8 @@ import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader, Subset
 
+from model import MlpCredit, LinearCredit
+
 ''' CONFIG '''
 DATA_PATH     = "data/german_credit_data/credit_data_validated.csv"
 TARGET_COL    = "target"
@@ -22,25 +24,6 @@ SEED          = 42
 TEST_SIZE     = 0.2
 THRESHOLD     = 0.5
 ARTIFACTS_DIR = "artifacts"
-
-
-class LinearCredit(nn.Module):
-    def __init__(self, d_in):
-        super().__init__()
-        self.lin = nn.Linear(d_in, 1)
-    def forward(self, x):
-        return self.lin(x)
-
-class MlpCredit(nn.Module):
-    def __init__(self, d_in, hidden=64, p=0.1):
-        super().__init__()
-        self.net = nn.Sequential(
-            nn.Linear(d_in, hidden), nn.ReLU(),
-            nn.Dropout(p),
-            nn.Linear(hidden, 1)
-        )
-    def forward(self, x):
-        return self.net(x)
 
 class TabularCSVDataset(Dataset):
     def __init__(self, csv_path: str, target_col: str = "target", feature_cols = None):
