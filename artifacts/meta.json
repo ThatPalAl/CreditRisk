@@ -130,6 +130,6 @@
   ],
   "threshold": 0.5,
   "target_col": "target",
-  "model_type": "linear",
+  "model_type": "mlp",
   "data_path": "data/german_credit_data/credit_data_validated.csv"
 }

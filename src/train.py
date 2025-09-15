@@ -14,9 +14,9 @@ from torch.utils.data import Dataset, DataLoader, Subset
 ''' CONFIG '''
 DATA_PATH     = "data/german_credit_data/credit_data_validated.csv"
 TARGET_COL    = "target"
-MODEL_NAME    = "linear"
-BATCH_SIZE    = 64
-EPOCHS        = 20
+MODEL_NAME    = "mlp"
+BATCH_SIZE    = 128
+EPOCHS        = 100
 LR            = 1e-3
 SEED          = 42
 TEST_SIZE     = 0.2
@@ -42,7 +42,6 @@ class MlpCredit(nn.Module):
     def forward(self, x):
         return self.net(x)
 
-# --------- DATASET ---------
 class TabularCSVDataset(Dataset):
     def __init__(self, csv_path: str, target_col: str = "target", feature_cols = None):
         df = pd.read_csv(csv_path)
@@ -100,7 +99,7 @@ def main():
     df = pd.read_csv(DATA_PATH)
     y_full = df[TARGET_COL].astype(int).values
     idx_all = np.arange(len(df))
-    idx_tr, idx_va = train_test_split(idx_all, test_size=TEST_SIZE, stratify=y_full, random_state=SEED)
+    idx_tr, idx_va = train_test_split(idx_all, test_size=TEST_SIZE, stratify=y_full, random_state=SEED, shuffle=True)
     train_ds = Subset(full_ds, indices=idx_tr)
     valid_ds = Subset(full_ds, indices=idx_va)
 
@@ -163,7 +162,7 @@ def main():
         "data_path": str(DATA_PATH),
     }
     (artifacts / "meta.json").write_text(json.dumps(meta, indent=2))
-    print(f"Saved {artifacts} (best AUC with a score: {best_auc:.3f})")
+    print(f"Saved {artifacts} (best AUC with a score: {best_auc:.3f}) using model :{MODEL_NAME}")
 
 if __name__ == "__main__":
     main()
