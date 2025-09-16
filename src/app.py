@@ -1,7 +1,9 @@
 from typing import Dict, Any
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from pydantic import BaseModel
 from pathlib import Path
+from fastapi.responses import HTMLResponse  
+from fastapi.templating import Jinja2Templates
 import json
 
 from .infer import load_model, predict_one
@@ -12,8 +14,16 @@ _MODEL, _META, _DEVICE = load_model()
 
 ARTIFACTS = Path("artifacts")
 
+templates = Jinja2Templates(directory=str(Path(__file__).resolve().parents[0] / "templates"))
+
 class CreditPayload(BaseModel):
     data: Dict[str, Any]
+
+
+@app.get("/", response_class=HTMLResponse)
+def home(request: Request):
+    print(templates)
+    return templates.TemplateResponse("base.html", {"request": request})
 
 @app.get("/health")
 def health():

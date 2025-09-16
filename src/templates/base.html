@@ -1,0 +1,104 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Credit Risk API — Demo</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 24px; }
+    h1 { margin-bottom: 0; }
+    .row { display: flex; gap: 24px; flex-wrap: wrap; }
+    .card { border: 1px solid #ddd; border-radius: 10px; padding: 16px; width: 360px; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+    .actions button { margin-right: 8px; }
+    #features { max-height: 260px; overflow: auto; border: 1px solid #eee; padding: 8px; }
+    label { display:block; font-size: 12px; color:#555; margin-top:8px; }
+    input { width: 100%; padding: 6px 8px; border: 1px solid #ccc; border-radius: 6px; }
+    pre { background: #0b1021; color: #e1e8ff; padding: 12px; border-radius: 8px; overflow:auto; }
+    .muted { color:#666; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h1>Credit Risk API</h1>
+  <p class="muted">DEMO UI for result and future prediction usage</p>
+
+  <div class="row">
+    <div class="card">
+      <h3>Service</h3>
+      <div class="actions">
+        <button onclick="ping()">/health</button>
+        <button onclick="getSchema()">/schema</button>
+        <button onclick="getMetrics()">/metrics</button>
+      </div>
+      <pre id="serviceOut">// output</pre>
+    </div>
+
+    <div class="card" style="flex:1; min-width: 380px;">
+      <h3>Predict (single)</h3>
+      <div class="actions">
+        <button onclick="loadSchema()">Load form</button>
+        <button onclick="loadSample()">Load sample</button>
+        <button onclick="sendPredict()">Predict</button>
+      </div>
+      <div id="formFields" class="row" style="gap:12px;"></div>
+      <div class="muted">Form generated from <code>/schema</code>. load sample.</div>
+      <pre id="predictOut">// prediction - post implementation inc</pre>
+    </div>
+  </div>
+
+<script>
+async function ping() {
+  const r = await fetch('/health'); const j = await r.json();
+  document.getElementById('serviceOut').textContent = JSON.stringify(j, null, 2);
+}
+async function getSchema() {
+  const r = await fetch('/schema'); const j = await r.json();
+  document.getElementById('serviceOut').textContent = JSON.stringify(j, null, 2);
+}
+async function getMetrics() {
+  const r = await fetch('/metrics'); const j = await r.json();
+  document.getElementById('serviceOut').textContent = JSON.stringify(j, null, 2);
+}
+let featureNames = [];
+async function loadSchema() {
+  const r = await fetch('/schema'); const j = await r.json();
+  featureNames = j.features || j["features"];
+  const wrap = document.getElementById('formFields');
+  wrap.innerHTML = '';
+  for (const f of featureNames) {
+    const div = document.createElement('div');
+    div.style.width = '170px';
+    div.innerHTML = `
+      <label for="f__${f}">${f}</label>
+      <input id="f__${f}" type="number" step="any" value="0" />
+    `;
+    wrap.appendChild(div);
+  }
+}
+async function loadSample() {
+  if (featureNames.length === 0) await loadSchema();
+  const r = await fetch('/sample'); const j = await r.json();
+  const data = j.data || {};
+  for (const f of featureNames) {
+    const el = document.getElementById('f__' + f);
+    if (el) el.value = (f in data) ? data[f] : 0;
+  }
+}
+async function sendPredict() {
+  if (featureNames.length === 0) await loadSchema();
+  const payload = {};
+  for (const f of featureNames) {
+    const el = document.getElementById('f__' + f);
+    let v = el ? el.value : 0;
+    if (v === '' || v === null) v = 0;
+    payload[f] = Number(v);
+  }
+  const r = await fetch('/predict', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ data: payload })
+  });
+  const j = await r.json();
+  document.getElementById('predictOut').textContent = JSON.stringify(j, null, 2);
+}
+</script>
+</body>
+</html>
