@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 import pandas as pd
 import json
+import numpy as np
 from pathlib import Path
 
 from .model import LinearCredit, MlpCredit
