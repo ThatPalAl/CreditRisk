@@ -10,4 +10,4 @@ COPY src ./src
 COPY artifacts ./artifacts
 
 EXPOSE 8000
-CMD ["uvicorn", "src.app:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["python", "-m", "uvicorn", "src.app:app", "--host", "0.0.0.0", "--port", "8000"]
